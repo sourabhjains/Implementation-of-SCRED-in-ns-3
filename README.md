@@ -4,7 +4,7 @@ Course Code: CS822
 
 Assignment: #GP3
 
-Self-Configuring RED (SCRED) [1] is an extension of RED [2]. It inherits all the properities of RED, except static parameters. Self configuring RED makes RED parameters adaptive to handle wide variety of traffic. 
+- Self-Configuring RED (SCRED) [1] is an extension of RED [2]. It inherits all the properities of RED, except static parameters. - Self configuring RED makes RED parameters adaptive to handle wide variety of traffic. 
 
 References:
 
