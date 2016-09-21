@@ -12,5 +12,3 @@ References:
 [1] Feng, W. C., Kandlur, D. D., Saha, D., & Shin, K. G. (1999, March). A self-configuring RED gateway. In INFOCOM'99. Eighteenth Annual Joint Conference of the IEEE Computer and Communications Societies. Proceedings. IEEE (Vol. 3, pp. 1320-1328). IEEE.
 
 [2] Floyd, S., & Jacobson, V. (1993). Random early detection gateways for congestion avoidance. IEEE/ACM Transactions on networking, 1(4), 397-413.
-
-[3] TBD
