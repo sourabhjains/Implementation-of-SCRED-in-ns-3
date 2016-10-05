@@ -100,6 +100,17 @@ public:
    */ 
   virtual ~RedQueueDisc ();
 
+
+  enum Status 
+  {
+     Above,
+     Between,
+     Below
+  };
+  
+  Status status;
+  
+
   /**
    * \brief Stats
    */
@@ -283,6 +294,7 @@ private:
   bool m_isGentle;          //!< True to increases dropping prob. slowly when ave queue exceeds maxthresh
   bool m_isARED;            //!< True to enable Adaptive RED
   bool m_isAdaptMaxP;       //!< True to adapt m_curMaxP
+  bool m_isSCRED            //!< True to enable Self Configuring RED.
   double m_minTh;           //!< Min avg length threshold (bytes)
   double m_maxTh;           //!< Max avg length threshold (bytes), should be >= 2*minTh
   uint32_t m_queueLimit;    //!< Queue limit in bytes / packets

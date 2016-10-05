@@ -113,6 +113,11 @@ TypeId RedQueueDisc::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&RedQueueDisc::m_isAdaptMaxP),
                    MakeBooleanChecker ())
+    .AddAttribute ("SCRED",
+                   "True to enable SCRED",
+                   BooleanValue(false),
+                   MakeBooleanAccessor (&RedQueueDisc::m_isSCRED),
+                   MakeBooleanChecker ()) 
     .AddAttribute ("MinTh",
                    "Minimum average length threshold in packets/bytes",
                    DoubleValue (5),
@@ -544,6 +549,36 @@ RedQueueDisc::InitializeParams (void)
                              << m_curMaxP << "; v_b " << m_vB <<  "; m_vC "
                              << m_vC << "; m_vD " <<  m_vD);
 }
+
+
+// Update m_curMaxP to dynamically adapt the aggressiveness of RED.
+void
+RedQueueDisc::UpdateMaxPSCRED(double newAve)
+{
+
+  if(m_minTh < newAve && newAve < m_maxTh)
+  {
+     status = Between;
+  }
+
+  // SCRED follows MIMD (multiplicative increase multiplicative decrease), rule to calculate m_curMaxP.
+ 
+  if(newAve < m_minTh && status != Below)
+  {
+     status = Below;
+     m_curMaxP = m_curMaxP / m_alpha;         // m_alpha is a constant decreasing factor. 
+  }
+  
+  if(newAve > m_maxTh && status != Above)
+  {
+     status = above;
+     m_curMaxP = m_curMaxP * m_beta;          // m_beta is a constant increasing factor.
+  }
+  
+  // Values recommend for alpha and beta are 3 and 2 respectively.
+}
+
+
 
 // Update m_curMaxP to keep the average queue length within the target range.
 void
