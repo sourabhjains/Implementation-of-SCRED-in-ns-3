@@ -528,7 +528,7 @@ RedQueueDisc::InitializeParams (void)
   if(m_isSCRED)
   {
     m_curMaxP = 0.02;
-    m_status = BELOW;
+    m_status = ABOVE;
     m_isAdaptMaxP = true;    // Turn on m_isAdaptMaxP to adapt m_curMaxP
   }
   else
