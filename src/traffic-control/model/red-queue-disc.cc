@@ -477,7 +477,7 @@ RedQueueDisc::InitializeParams (void)
   m_cautious = 0;
   m_ptc = m_linkBandwidth.GetBitRate () / (8.0 * m_meanPktSize);
 
-  if (m_isARED)
+  if (m_isARED || m_isSCRED)
     {
       // Set m_minTh, m_maxTh and m_qW to zero for automatic setting
       m_minTh = 0;
@@ -487,6 +487,7 @@ RedQueueDisc::InitializeParams (void)
       // Turn on m_isAdaptMaxP to adapt m_curMaxP
       m_isAdaptMaxP = true;
     }
+    
 
   if (m_minTh == 0 && m_maxTh == 0)
     {
@@ -529,7 +530,6 @@ RedQueueDisc::InitializeParams (void)
   {
     m_curMaxP = 0.02;
     m_status = ABOVE;
-    m_isAdaptMaxP = true;    // Turn on m_isAdaptMaxP to adapt m_curMaxP
   }
   else
   {
