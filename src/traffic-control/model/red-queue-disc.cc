@@ -528,6 +528,7 @@ RedQueueDisc::InitializeParams (void)
   if(m_isSCRED)
   {
     m_curMaxP = 0.02;
+    m_status = BELOW;
     m_isAdaptMaxP = true;    // Turn on m_isAdaptMaxP to adapt m_curMaxP
   }
   else
@@ -605,16 +606,16 @@ RedQueueDisc::UpdateMaxPSCRED(double newAve)
 
   if(m_minTh < newAve && newAve < m_maxTh)
   {
-     status = BETWEEN;
+     m_status = BETWEEN;
   } 
-  if(newAve < m_minTh && status != BELOW)
+  if(newAve < m_minTh && m_status != BELOW)
   {
-     status = BELOW;
+     m_status = BELOW;
      m_curMaxP = m_curMaxP / m_a;         // m_alpha is a constant decreasing factor. 
   }
-  if(newAve > m_maxTh && status != ABOVE)
+  if(newAve > m_maxTh && m_status != ABOVE)
   {
-     status = ABOVE;
+     m_status = ABOVE;
      m_curMaxP = m_curMaxP * m_b;          // m_beta is a constant increasing factor.
   }
 
