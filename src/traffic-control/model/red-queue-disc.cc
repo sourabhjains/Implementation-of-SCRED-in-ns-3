@@ -173,6 +173,16 @@ TypeId RedQueueDisc::GetTypeId (void)
                    DoubleValue (0.9),
                    MakeDoubleAccessor (&RedQueueDisc::SetAredBeta),
                    MakeDoubleChecker <double> (0, 1))
+    .AddAttribute ("fengAlpha",
+                   "Increment parameter for m_curMaxP in ARED",
+                   DoubleValue (3.0),
+                   MakeDoubleAccessor (&RedQueueDisc::SetAredAlpha),
+                   MakeDoubleChecker <double> ())
+    .AddAttribute ("fengBeta",
+                   "Decrement parameter for m_curMaxP in ARED",
+                   DoubleValue (2.0),
+                   MakeDoubleAccessor (&RedQueueDisc::SetAredBeta),
+                   MakeDoubleChecker <double> ())
     .AddAttribute ("LastSet",
                    "Store the last time m_curMaxP was updated",
                    TimeValue (Seconds (0.0)),
@@ -486,7 +496,14 @@ RedQueueDisc::InitializeParams (void)
       th_diff = 1.0; 
     }
   m_vA = 1.0 / th_diff;
-  m_curMaxP = 1.0 / m_lInterm;
+  if(m_isSCRED)
+  {
+    m_curMaxP = 0.02;
+  }
+  else
+  {
+    m_curMaxP = 1.0 / m_lInterm;
+  }
   m_vB = -m_minTh / th_diff;
 
   if (m_isGentle)
@@ -558,23 +575,20 @@ RedQueueDisc::UpdateMaxPSCRED(double newAve)
 
   if(m_minTh < newAve && newAve < m_maxTh)
   {
-     status = Between;
+     status = Status.BETWEEN;
+  } 
+  if(newAve < m_minTh && status != Below)
+  {
+     status = Status.BELOW;
+     m_curMaxP = m_curMaxP / m_alpha;         // m_alpha is a constant decreasing factor. 
+  }
+  if(newAve > m_maxTh && status != Above)
+  {
+     status = StatusABOVE;
+     m_curMaxP = m_curMaxP * m_beta;          // m_beta is a constant increasing factor.
   }
 
   // SCRED follows MIMD (multiplicative increase multiplicative decrease), rule to calculate m_curMaxP.
- 
-  if(newAve < m_minTh && status != Below)
-  {
-     status = Below;
-     m_curMaxP = m_curMaxP / m_alpha;         // m_alpha is a constant decreasing factor. 
-  }
-  
-  if(newAve > m_maxTh && status != Above)
-  {
-     status = above;
-     m_curMaxP = m_curMaxP * m_beta;          // m_beta is a constant increasing factor.
-  }
-  
   // Values recommend for alpha and beta are 3 and 2 respectively.
 }
 
@@ -615,10 +629,17 @@ RedQueueDisc::Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW)
   newAve += qW * nQueued;
 
   Time now = Simulator::Now();
-  if (m_isAdaptMaxP && now > m_lastSet + m_interval)
-    {
-      UpdateMaxP(newAve, now);
-    }
+  if(m_isAdaptMaxp)
+  {
+     if(m_isSCRED)
+     {
+       UpdateMaxPSCRED(newAve);  // Update MaxP using SCRED in MIMD fashion.
+     }
+     else if(now > m_lastSet + m_interval )
+     {
+       UpdateMaxP(newAve, now);
+     } 
+  }
 
   return newAve;
 }

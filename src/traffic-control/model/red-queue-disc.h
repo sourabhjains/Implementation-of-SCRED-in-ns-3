@@ -103,9 +103,9 @@ public:
 
   enum Status 
   {
-     Above,
-     Between,
-     Below
+     ABOVE,
+     BETWEEN,
+     BELOW
   };
   
   Status status;
@@ -306,6 +306,8 @@ private:
   double m_bottom;          //!< Lower bound for m_curMaxP in ARED
   double m_alpha;           //!< Increment parameter for m_curMaxP in ARED
   double m_beta;            //!< Decrement parameter for m_curMaxP in ARED
+  double m_a;               //!< Decrement parameter for m_curMaxP in ARED 
+  double m_b;               //!< Increment parameter for m_curMaxP in SCRED
   Time m_rtt;               //!< Rtt to be considered while automatically setting m_bottom in ARED
   bool m_isNs1Compat;       //!< Ns-1 compatibility
   DataRate m_linkBandwidth; //!< Link bandwidth
