@@ -108,7 +108,6 @@ public:
      BELOW
   };
   
-  Status status;
   
 
   /**
@@ -182,6 +181,34 @@ public:
     */
    double GetAredBeta (void);
 
+   /**
+    * \brief Set the alpha value to adapt m_curMaxP.
+    *
+    * \param alpha The value of alpha to adapt m_curMaxP.
+    */
+   void SetSCREDAlpha (double alpha);
+
+   /**
+    * \brief Get the alpha value to adapt m_curMaxP.
+    *
+    * \returns The alpha value to adapt m_curMaxP.
+    */
+   double GetSCREDAlpha (void);
+
+   /**
+    * \brief Set the beta value to adapt m_curMaxP.
+    *
+    * \param beta The value of beta to adapt m_curMaxP.
+    */
+   void SetSCREDBeta (double beta);
+
+   /**
+    * \brief Get the beta value to adapt m_curMaxP.
+    *
+    * \returns The beta value to adapt m_curMaxP.
+    */
+   double GetSCREDBeta (void);
+
   /**
    * \brief Set the limit of the queue.
    *
@@ -250,6 +277,12 @@ private:
     * \param now Current Time
     */
   void UpdateMaxP (double newAve, Time now);
+   /**
+    * \brief Update m_curMaxP
+    * \param newAve new average queue length
+    * \param now Current Time
+    */
+  void UpdateMaxPSCRED (double newAve);
   /**
    * \brief Check if a packet needs to be dropped due to probability mark
    * \param item queue item
@@ -294,7 +327,8 @@ private:
   bool m_isGentle;          //!< True to increases dropping prob. slowly when ave queue exceeds maxthresh
   bool m_isARED;            //!< True to enable Adaptive RED
   bool m_isAdaptMaxP;       //!< True to adapt m_curMaxP
-  bool m_isSCRED            //!< True to enable Self Configuring RED.
+  bool m_isSCRED;           //!< True to enable Self Configuring RED.
+  Status m_status;          
   double m_minTh;           //!< Min avg length threshold (bytes)
   double m_maxTh;           //!< Max avg length threshold (bytes), should be >= 2*minTh
   uint32_t m_queueLimit;    //!< Queue limit in bytes / packets
