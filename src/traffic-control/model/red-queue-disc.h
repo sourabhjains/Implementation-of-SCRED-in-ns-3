@@ -186,7 +186,7 @@ public:
     *
     * \param alpha The value of alpha to adapt m_curMaxP in Feng's Adaptive RED.
     */
-   void SetFengAdaptiveA (double alpha);
+   void SetFengAdaptiveA (double a);
 
    /**
     * \brief Get the alpha value to adapt m_curMaxP in Feng's Adaptive RED.
@@ -200,7 +200,7 @@ public:
     *
     * \param beta The value of beta to adapt m_curMaxP in Feng's Adaptive RED.
     */
-   void SetFengAdaptiveB (double beta);
+   void SetFengAdaptiveB (double b);
 
    /**
     * \brief Get the beta value to adapt m_curMaxP in Feng's Adaptive RED.
@@ -325,9 +325,7 @@ private:
   bool m_isWait;            //!< True for waiting between dropped packets
   bool m_isGentle;          //!< True to increases dropping prob. slowly when ave queue exceeds maxthresh
   bool m_isARED;            //!< True to enable Adaptive RED
-  bool m_isAdaptMaxP;       //!< True to adapt m_curMaxP
-  bool m_isFengAdaptive;    //!< True to enable Feng's Adaptive RED
-  Status_t m_status;        //!< For use in Feng's Adaptive RED          
+  bool m_isAdaptMaxP;       //!< True to adapt m_curMaxP        
   double m_minTh;           //!< Min avg length threshold (bytes)
   double m_maxTh;           //!< Max avg length threshold (bytes), should be >= 2*minTh
   uint32_t m_queueLimit;    //!< Queue limit in bytes / packets
@@ -339,9 +337,10 @@ private:
   double m_bottom;          //!< Lower bound for m_curMaxP in ARED
   double m_alpha;           //!< Increment parameter for m_curMaxP in ARED
   double m_beta;            //!< Decrement parameter for m_curMaxP in ARED
+  Time m_rtt;               //!< Rtt to be considered while automatically setting m_bottom in ARED
+  bool m_isFengAdaptive;    //!< True to enable Feng's Adaptive RED
   double m_b;               //!< Increment parameter for m_curMaxP in Feng's Adaptive RED
   double m_a;               //!< Decrement parameter for m_curMaxP in Feng's Adaptive RED
-  Time m_rtt;               //!< Rtt to be considered while automatically setting m_bottom in ARED
   bool m_isNs1Compat;       //!< Ns-1 compatibility
   DataRate m_linkBandwidth; //!< Link bandwidth
   Time m_linkDelay;         //!< Link delay
@@ -361,6 +360,7 @@ private:
   double m_ptc;             //!< packet time constant in packets/second
   double m_qAvg;            //!< Average queue length
   uint32_t m_count;         //!< Number of packets since last random number generation
+  Status_t m_status;        //!< For use in Feng's Adaptive RED  
   /**
    * 0 for default RED
    * 1 experimental (see red-queue.cc)

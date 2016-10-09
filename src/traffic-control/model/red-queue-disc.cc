@@ -297,6 +297,11 @@ RedQueueDisc::SetFengAdaptiveA (double a)
 {
   NS_LOG_FUNCTION (this << a);
   m_a = a;
+
+  if (m_a != 3)
+    {
+      NS_LOG_WARN ("Alpha value does not follow the recommendations!");
+    }
 }
 
 double
@@ -312,6 +317,10 @@ RedQueueDisc::SetFengAdaptiveB (double b)
   NS_LOG_FUNCTION (this << b);
   m_b = b;
 
+  if (m_b != 2)
+    {
+      NS_LOG_WARN ("Beta value does not follow the recommendations!");
+    }
 }
 
 void
