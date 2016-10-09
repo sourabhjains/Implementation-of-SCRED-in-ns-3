@@ -534,15 +534,17 @@ RedQueueDisc::InitializeParams (void)
       th_diff = 1.0; 
     }
   m_vA = 1.0 / th_diff;
-  if(m_isFengAdaptive)
-  {
-    m_curMaxP = 0.02;
-    m_status = Above;
-  }
+
+  if (m_isFengAdaptive)
+    {
+      m_curMaxP = 0.02;
+      m_status = Above;
+    }
   else
-  {
-    m_curMaxP = 1.0 / m_lInterm;
-  }
+    {
+      m_curMaxP = 1.0 / m_lInterm;
+    }
+
   m_vB = -m_minTh / th_diff;
 
   if (m_isGentle)
@@ -606,26 +608,26 @@ RedQueueDisc::InitializeParams (void)
                              << m_vC << "; m_vD " <<  m_vD);
 }
 
-
-// Update m_curMaxP to dynamically adapt the aggressiveness of RED.
+// Updating m_curMaxP, following the pseudocode 
+// from: A Self-Configuring RED Gateway, INFOCOMM '99.
+// They recommend m_a = 3, and m_b = 2.
 void
 RedQueueDisc::UpdateMaxPFeng (double newAve)
 {
-
-  if(m_minTh < newAve && newAve < m_maxTh)
-  {
-     m_status = Between;
-  } 
-  if(newAve < m_minTh && m_status != Below)
-  {
-     m_status = Below;
-     m_curMaxP = m_curMaxP / m_a;         // m_a is a constant decreasing factor. 
-  }
-  if(newAve > m_maxTh && m_status != Above)
-  {
-     m_status = Above;
-     m_curMaxP = m_curMaxP * m_b;          // m_b is a constant increasing factor.
-  }
+  if (m_minTh < newAve && newAve < m_maxTh)
+    {
+      m_status = Between;
+    } 
+  else if (newAve < m_minTh && m_status != Below)
+    {
+      m_status = Below;
+      m_curMaxP = m_curMaxP / m_a; 
+    }
+  else if (newAve > m_maxTh && m_status != Above)
+    {
+      m_status = Above;
+      m_curMaxP = m_curMaxP * m_b;
+    }
 }
 
 // Update m_curMaxP to keep the average queue length within the target range.
