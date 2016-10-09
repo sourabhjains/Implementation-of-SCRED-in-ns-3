@@ -100,16 +100,16 @@ public:
    */ 
   virtual ~RedQueueDisc ();
 
-
-  enum Status 
-  {
-     ABOVE,
-     BETWEEN,
-     BELOW
-  };
+  /** 
+   * \brief Used in Feng's Adaptive RED
+   */
+  typedef enum 
+    {
+      Above,        //!< When m_qAvg > m_maxTh
+      Between,      //!< When m_maxTh < m_qAvg < m_minTh
+      Below,        //!< When m_qAvg < m_minTh
+    } Status_t;
   
-  
-
   /**
    * \brief Stats
    */
@@ -182,32 +182,32 @@ public:
    double GetAredBeta (void);
 
    /**
-    * \brief Set the alpha value to adapt m_curMaxP.
+    * \brief Set the alpha value to adapt m_curMaxP in Feng's Adaptive RED.
     *
-    * \param alpha The value of alpha to adapt m_curMaxP.
+    * \param alpha The value of alpha to adapt m_curMaxP in Feng's Adaptive RED.
     */
-   void SetSCREDAlpha (double alpha);
+   void SetFengAdaptiveA (double alpha);
 
    /**
-    * \brief Get the alpha value to adapt m_curMaxP.
+    * \brief Get the alpha value to adapt m_curMaxP in Feng's Adaptive RED.
     *
-    * \returns The alpha value to adapt m_curMaxP.
+    * \returns The alpha value to adapt m_curMaxP in Feng's Adaptive RED.
     */
-   double GetSCREDAlpha (void);
+   double GetFengAdaptiveA (void);
 
    /**
-    * \brief Set the beta value to adapt m_curMaxP.
+    * \brief Set the beta value to adapt m_curMaxP in Feng's Adaptive RED.
     *
-    * \param beta The value of beta to adapt m_curMaxP.
+    * \param beta The value of beta to adapt m_curMaxP in Feng's Adaptive RED.
     */
-   void SetSCREDBeta (double beta);
+   void SetFengAdaptiveB (double beta);
 
    /**
-    * \brief Get the beta value to adapt m_curMaxP.
+    * \brief Get the beta value to adapt m_curMaxP in Feng's Adaptive RED.
     *
-    * \returns The beta value to adapt m_curMaxP.
+    * \returns The beta value to adapt m_curMaxP in Feng's Adaptive RED.
     */
-   double GetSCREDBeta (void);
+   double GetFengAdaptiveB (void);
 
   /**
    * \brief Set the limit of the queue.
@@ -278,11 +278,10 @@ private:
     */
   void UpdateMaxP (double newAve, Time now);
    /**
-    * \brief Update m_curMaxP
+    * \brief Update m_curMaxP in Feng's Adaptive RED
     * \param newAve new average queue length
-    * \param now Current Time
     */
-  void UpdateMaxPSCRED (double newAve);
+  void UpdateMaxPFeng (double newAve);
   /**
    * \brief Check if a packet needs to be dropped due to probability mark
    * \param item queue item
@@ -327,8 +326,8 @@ private:
   bool m_isGentle;          //!< True to increases dropping prob. slowly when ave queue exceeds maxthresh
   bool m_isARED;            //!< True to enable Adaptive RED
   bool m_isAdaptMaxP;       //!< True to adapt m_curMaxP
-  bool m_isSCRED;           //!< True to enable Self Configuring RED.
-  Status m_status;          
+  bool m_isFengAdaptive;    //!< True to enable Feng's Adaptive RED
+  Status_t m_status;        //!< For use in Feng's Adaptive RED          
   double m_minTh;           //!< Min avg length threshold (bytes)
   double m_maxTh;           //!< Max avg length threshold (bytes), should be >= 2*minTh
   uint32_t m_queueLimit;    //!< Queue limit in bytes / packets
@@ -340,8 +339,8 @@ private:
   double m_bottom;          //!< Lower bound for m_curMaxP in ARED
   double m_alpha;           //!< Increment parameter for m_curMaxP in ARED
   double m_beta;            //!< Decrement parameter for m_curMaxP in ARED
-  double m_a;               //!< Decrement parameter for m_curMaxP in ARED 
-  double m_b;               //!< Increment parameter for m_curMaxP in SCRED
+  double m_b;               //!< Increment parameter for m_curMaxP in Feng's Adaptive RED
+  double m_a;               //!< Decrement parameter for m_curMaxP in Feng's Adaptive RED
   Time m_rtt;               //!< Rtt to be considered while automatically setting m_bottom in ARED
   bool m_isNs1Compat;       //!< Ns-1 compatibility
   DataRate m_linkBandwidth; //!< Link bandwidth

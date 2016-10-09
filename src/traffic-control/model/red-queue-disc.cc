@@ -113,10 +113,10 @@ TypeId RedQueueDisc::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&RedQueueDisc::m_isAdaptMaxP),
                    MakeBooleanChecker ())
-    .AddAttribute ("SCRED",
-                   "True to enable SCRED",
+    .AddAttribute ("FengAdaptive",
+                   "True to enable Feng's Adaptive RED",
                    BooleanValue(false),
-                   MakeBooleanAccessor (&RedQueueDisc::m_isSCRED),
+                   MakeBooleanAccessor (&RedQueueDisc::m_isFengAdaptive),
                    MakeBooleanChecker ()) 
     .AddAttribute ("MinTh",
                    "Minimum average length threshold in packets/bytes",
@@ -173,15 +173,15 @@ TypeId RedQueueDisc::GetTypeId (void)
                    DoubleValue (0.9),
                    MakeDoubleAccessor (&RedQueueDisc::SetAredBeta),
                    MakeDoubleChecker <double> (0, 1))
-    .AddAttribute ("fengAlpha",
-                   "Increment parameter for m_curMaxP in ARED",
-                   DoubleValue (3.0),
-                   MakeDoubleAccessor (&RedQueueDisc::SetSCREDAlpha),
-                   MakeDoubleChecker <double> ())
-    .AddAttribute ("fengBeta",
-                   "Decrement parameter for m_curMaxP in ARED",
+    .AddAttribute ("FengBeta",
+                   "Increment parameter for m_curMaxP in Feng's Adaptive RED",
                    DoubleValue (2.0),
-                   MakeDoubleAccessor (&RedQueueDisc::SetSCREDBeta),
+                   MakeDoubleAccessor (&RedQueueDisc::SetFengAdaptiveB),
+                   MakeDoubleChecker <double> ())
+    .AddAttribute ("FengAlpha",
+                   "Decrement parameter for m_curMaxP in Feng's Adaptive RED",
+                   DoubleValue (3.0),
+                   MakeDoubleAccessor (&RedQueueDisc::SetFengAdaptiveA),
                    MakeDoubleChecker <double> ())
     .AddAttribute ("LastSet",
                    "Store the last time m_curMaxP was updated",
@@ -286,31 +286,31 @@ RedQueueDisc::GetAredBeta (void)
 }
 
 double
-RedQueueDisc::GetSCREDAlpha (void)
+RedQueueDisc::GetFengAdaptiveA (void)
 {
   NS_LOG_FUNCTION (this);
-  return m_alpha;
+  return m_a;
 }
 
 void
-RedQueueDisc::SetSCREDAlpha (double alpha)
+RedQueueDisc::SetFengAdaptiveA (double a)
 {
-  NS_LOG_FUNCTION (this << alpha);
-  m_a = alpha;
+  NS_LOG_FUNCTION (this << a);
+  m_a = a;
 }
 
 double
-RedQueueDisc::GetSCREDBeta (void)
+RedQueueDisc::GetFengAdaptiveB (void)
 {
   NS_LOG_FUNCTION (this);
-  return m_beta;
+  return m_b;
 }
 
 void
-RedQueueDisc::SetSCREDBeta (double beta)
+RedQueueDisc::SetFengAdaptiveB (double b)
 {
-  NS_LOG_FUNCTION (this << beta);
-  m_b = beta;
+  NS_LOG_FUNCTION (this << b);
+  m_b = b;
 
 }
 
@@ -477,7 +477,7 @@ RedQueueDisc::InitializeParams (void)
   m_cautious = 0;
   m_ptc = m_linkBandwidth.GetBitRate () / (8.0 * m_meanPktSize);
 
-  if (m_isARED || m_isSCRED)
+  if (m_isARED)
     {
       // Set m_minTh, m_maxTh and m_qW to zero for automatic setting
       m_minTh = 0;
@@ -488,7 +488,6 @@ RedQueueDisc::InitializeParams (void)
       m_isAdaptMaxP = true;
     }
     
-
   if (m_minTh == 0 && m_maxTh == 0)
     {
       m_minTh = 5.0;
@@ -526,10 +525,10 @@ RedQueueDisc::InitializeParams (void)
       th_diff = 1.0; 
     }
   m_vA = 1.0 / th_diff;
-  if(m_isSCRED)
+  if(m_isFengAdaptive)
   {
     m_curMaxP = 0.02;
-    m_status = ABOVE;
+    m_status = Above;
   }
   else
   {
@@ -601,29 +600,24 @@ RedQueueDisc::InitializeParams (void)
 
 // Update m_curMaxP to dynamically adapt the aggressiveness of RED.
 void
-RedQueueDisc::UpdateMaxPSCRED(double newAve)
+RedQueueDisc::UpdateMaxPFeng (double newAve)
 {
 
   if(m_minTh < newAve && newAve < m_maxTh)
   {
-     m_status = BETWEEN;
+     m_status = Between;
   } 
-  if(newAve < m_minTh && m_status != BELOW)
+  if(newAve < m_minTh && m_status != Below)
   {
-     m_status = BELOW;
-     m_curMaxP = m_curMaxP / m_a;         // m_alpha is a constant decreasing factor. 
+     m_status = Below;
+     m_curMaxP = m_curMaxP / m_a;         // m_a is a constant decreasing factor. 
   }
-  if(newAve > m_maxTh && m_status != ABOVE)
+  if(newAve > m_maxTh && m_status != Above)
   {
-     m_status = ABOVE;
-     m_curMaxP = m_curMaxP * m_b;          // m_beta is a constant increasing factor.
+     m_status = Above;
+     m_curMaxP = m_curMaxP * m_b;          // m_b is a constant increasing factor.
   }
-
-  // SCRED follows MIMD (multiplicative increase multiplicative decrease), rule to calculate m_curMaxP.
-  // Values recommend for alpha and beta are 3 and 2 respectively.
 }
-
-
 
 // Update m_curMaxP to keep the average queue length within the target range.
 void
@@ -662,9 +656,9 @@ RedQueueDisc::Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW)
   Time now = Simulator::Now();
   if(m_isAdaptMaxP)
   {
-     if(m_isSCRED)
+     if(m_isFengAdaptive)
      {
-       UpdateMaxPSCRED(newAve);  // Update MaxP using SCRED in MIMD fashion.
+       UpdateMaxPFeng(newAve);  // Update MaxP using SCRED in MIMD fashion.
      }
      else if(now > m_lastSet + m_interval )
      {
