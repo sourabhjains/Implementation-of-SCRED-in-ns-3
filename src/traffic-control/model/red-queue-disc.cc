@@ -539,6 +539,9 @@ RedQueueDisc::InitializeParams (void)
     {
       m_curMaxP = 0.02;
       m_status = Above;
+      m_minTh = 5.0;
+      m_maxTh = 15.0;
+      m_isAdaptMaxP = true;
     }
   else
     {
