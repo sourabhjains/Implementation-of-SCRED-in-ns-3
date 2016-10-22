@@ -539,7 +539,7 @@ RedQueueDisc::InitializeParams (void)
     {
       m_curMaxP = 0.02;
       m_status = Above;
-      m_isAdaptMaxP = true;
+      m_isFengAdaptive=true;
     }
   else
     {
@@ -666,13 +666,13 @@ RedQueueDisc::Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW)
   newAve += qW * nQueued;
 
   Time now = Simulator::Now();
-  if(m_isAdaptMaxP)
-  {
+ 
      if(m_isFengAdaptive)
      {
        UpdateMaxPFeng(newAve);  // Update MaxP using SCRED in MIMD fashion.
      }
-     else if(now > m_lastSet + m_interval )
+
+     if(m_isAdaptMaxP && now > m_lastSet + m_interval )
      {
        UpdateMaxP(newAve, now);
      } 
