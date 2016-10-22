@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
+ * Author: Sourabh Jain <sourabhjain560@outlook.com>
  *
  */
 
@@ -96,7 +96,6 @@ int main (int argc, char *argv[])
     {
       // Turn on SCRED
       Config::SetDefault ("ns3::RedQueueDisc::FengAdaptive", BooleanValue (true));
-      Config::SetDefault ("ns3::RedQueueDisc::LInterm", DoubleValue (10.0));
     }
 
   // Create the point-to-point link helpers
