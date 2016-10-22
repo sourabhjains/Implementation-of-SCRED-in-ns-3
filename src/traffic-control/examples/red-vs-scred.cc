@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2016 NITK Surathkal
+ * Copyright (c) 2015 NITK Surathkal
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -63,7 +63,7 @@ int main (int argc, char *argv[])
 
   if ((queueDiscType != "RED") && (queueDiscType != "FengAdaptive"))
     {
-      std::cout << "Invalid queue disc type: Use --queueDiscType=RED or --queueDiscType=FengAdaptive" << std::endl;
+      std::cout << "Invalid queue disc type: Use --queueDiscType=RED or --queueDiscType=ARED" << std::endl;
       exit (1);
     }
 
@@ -125,9 +125,10 @@ int main (int argc, char *argv[])
   stack.Install (d.GetLeft ());
   stack.Install (d.GetRight ());
   TrafficControlHelper tchBottleneck;
+  QueueDiscContainer queueDiscs;
   tchBottleneck.SetRootQueueDisc ("ns3::RedQueueDisc");
   tchBottleneck.Install (d.GetLeft ()->GetDevice (0));
-  tchBottleneck.Install (d.GetRight ()->GetDevice (0));
+  queueDiscs = tchBottleneck.Install (d.GetRight ()->GetDevice (0));
 
   // Assign IP Addresses
   d.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.1.0", "255.255.255.0"),
@@ -136,8 +137,8 @@ int main (int argc, char *argv[])
 
   // Install on/off app on all right side nodes
   OnOffHelper clientHelper ("ns3::TcpSocketFactory", Address ());
-  clientHelper.SetAttribute ("OnTime", StringValue ("ns3::UniformRandomVariable[Min=0.,Max=1.]"));
-  clientHelper.SetAttribute ("OffTime", StringValue ("ns3::UniformRandomVariable[Min=0.,Max=1.]"));
+  clientHelper.SetAttribute ("OnTime", StringValue ("ns3::UniformRandomVariable[Min=0.|Max=1.]"));
+  clientHelper.SetAttribute ("OffTime", StringValue ("ns3::UniformRandomVariable[Min=0.|Max=1.]"));
   Address sinkLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
   ApplicationContainer sinkApps;
@@ -164,78 +165,41 @@ int main (int argc, char *argv[])
   std::cout << "Running the simulation" << std::endl;
   Simulator::Run ();
 
-  uint32_t totalRxBytesCounter = 0;
-  for (uint32_t i = 0; i < sinkApps.GetN (); i++)
-    {
-      Ptr <Application> app = sinkApps.Get (i);
-      Ptr <PacketSink> pktSink = DynamicCast <PacketSink> (app);
-      totalRxBytesCounter += pktSink->GetTotalRx ();
-    }
+  RedQueueDisc::Stats st = StaticCast<RedQueueDisc> (queueDiscs.Get (0))->GetStats ();
 
   if (queueDiscType == "RED")
     {
-      if (modeBytes)
+      if (st.unforcedDrop > st.forcedDrop)
         {
-          if (totalRxBytesCounter > 2772992)
-            {
-              std::cout << "RED Goodput is too high, should be about 10403.2 Bytes/sec" << std::endl;
-              exit (-1);
-            }
-          else if (totalRxBytesCounter < 2661888)
-            {
-              std::cout << "RED Goodput is too low, should be about 10403.2 Bytes/sec" << std::endl;
-              exit (-1);
-            }
+          std::cout << "Drops due to prob mark should be less than the drops due to hard mark" << std::endl;
+          exit (-1);
         }
-      else
+
+      if (st.qLimDrop != 0)
         {
-          if (totalRxBytesCounter > 2759680)
-            {
-              std::cout << "RED Goodput is too high, should be about 10355.1 Bytes/sec" << std::endl;
-              exit (-1);
-            }
-          else if (totalRxBytesCounter < 2666496)
-            {
-              std::cout << "RED Goodput is too low, should be about 10355.1 Bytes/sec" << std::endl;
-              exit (-1);
-            }
+          std::cout << "There should be zero drops due to queue full" << std::endl;
+          exit (-1);
         }
     }
   else if (queueDiscType == "FengAdaptive")
     {
-      if (modeBytes)
+      if (st.unforcedDrop < st.forcedDrop)
         {
-          if (totalRxBytesCounter > 2771968)
-            {
-              std::cout << "SCRED Goodput is too high, should be about 10366.7 Bytes/sec" << std::endl;
-              exit (-1);
-            }
-          else if (totalRxBytesCounter < 2654208)
-            {
-              std::cout << "SCRED Goodput is too low, should be about 10366.7 Bytes/sec" << std::endl;
-              exit (-1);
-            }
+          std::cout << "Drops due to prob mark should be more than the drops due to hard mark" << std::endl;
+          exit (-1);
         }
-      else
+
+      if (st.qLimDrop != 0)
         {
-          if (totalRxBytesCounter > 2765824)
-            {
-              std::cout << "SCRED Goodput is too high, should be about 10317.4 Bytes/sec" << std::endl;
-              exit (-1);
-            }
-          else if (totalRxBytesCounter < 2636800)
-            {
-              std::cout << "SCRED Goodput is too low, should be about 10317.4 Bytes/sec" << std::endl;
-              exit (-1);
-            }
+          std::cout << "There should be zero drops due to queue full" << std::endl;
+          exit (-1);
         }
     }
 
-  std::cout << "----------------------------\nQueue disc Type:"
-            << queueDiscType
-            << "\nGoodput Bytes/sec:"
-            << totalRxBytesCounter / Simulator::Now ().GetSeconds () << std::endl;
-  std::cout << "----------------------------" << std::endl;
+  std::cout << "*** Stats from the bottleneck queue disc ***" << std::endl;
+  std::cout << "\t " << st.unforcedDrop << " drops due to prob mark" << std::endl;
+  std::cout << "\t " << st.forcedDrop << " drops due to hard mark" << std::endl;
+  std::cout << "\t " << st.qLimDrop << " drops due to queue full" << std::endl;
   std::cout << "Destroying the simulation" << std::endl;
 
   Simulator::Destroy ();
