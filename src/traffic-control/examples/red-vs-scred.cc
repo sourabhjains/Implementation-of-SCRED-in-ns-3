@@ -16,7 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Sourabh Jain <sourabhjain560@outlook.com>
- *
+ *         Nitin Yadav <nitin1993915@gmail.com>
+ *         Mohit P. Tahiliani <tahiliani@nitk.edu.in>
+ *         
  */
 
 #include "ns3/core-module.h"
@@ -63,7 +65,7 @@ int main (int argc, char *argv[])
 
   if ((queueDiscType != "RED") && (queueDiscType != "FengAdaptive"))
     {
-      std::cout << "Invalid queue disc type: Use --queueDiscType=RED or --queueDiscType=ARED" << std::endl;
+      std::cout << "Invalid queue disc type: Use --queueDiscType=RED or --queueDiscType=FengAdaptive" << std::endl;
       exit (1);
     }
 

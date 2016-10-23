@@ -496,6 +496,22 @@ RedQueueDisc::InitializeParams (void)
       // Turn on m_isAdaptMaxP to adapt m_curMaxP
       m_isAdaptMaxP = true;
     }
+
+  if (m_isFengAdaptive)
+    {
+      m_curMaxP = 0.02;
+      m_status = Above;
+
+      // Set m_minTh, m_maxTh and m_qW to zero for automatic setting
+      m_minTh = 0;
+      m_maxTh = 0;
+      m_qW = 0;
+      
+    }
+  else
+    {
+      m_curMaxP = 1.0 / m_lInterm;
+    }
     
   if (m_minTh == 0 && m_maxTh == 0)
     {
@@ -534,17 +550,6 @@ RedQueueDisc::InitializeParams (void)
       th_diff = 1.0; 
     }
   m_vA = 1.0 / th_diff;
-
-  if (m_isFengAdaptive)
-    {
-      m_curMaxP = 0.02;
-      m_status = Above;
-      m_isFengAdaptive=true;
-    }
-  else
-    {
-      m_curMaxP = 1.0 / m_lInterm;
-    }
 
   m_vB = -m_minTh / th_diff;
 
@@ -672,11 +677,10 @@ RedQueueDisc::Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW)
        UpdateMaxPFeng(newAve);  // Update MaxP using SCRED in MIMD fashion.
      }
 
-     if(m_isAdaptMaxP && now > m_lastSet + m_interval )
+     if(m_isAdaptMaxP && (now > m_lastSet + m_interval))
      {
        UpdateMaxP(newAve, now);
      } 
-  }
 
   return newAve;
 }
