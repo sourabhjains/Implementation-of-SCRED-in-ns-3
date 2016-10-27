@@ -40,7 +40,7 @@ Self-Configuring RED Gateway (SCRED)
 ====================================
 SCRED is variant of RED with a feature that it adapts maximum drop probability.
 The model in ns-3 contains implementation of this feature, and is a port of ns-2
-RARED model. Note that the user is allowed to choose and explicitly configure
+SCRED model. Note that the user is allowed to choose and explicitly configure
 the simulation by selecting feature.
 
 
@@ -91,10 +91,10 @@ In addition to RED attributes, ARED queue requires following attributes:
 
 In addition to RED attributes, SCRED queue requires following attributes:
 
-* FengAdaptive (m_isFengAdaptive, Boolean attribute, Default: false)
-* Status (m_status, status of current queue length, Default: Above)
-* alpha (m_a, increment parameter for m_curMaxP, Default: 5)
-* beta (m_b, decrement parameter for m_curMaxP, Default: 15)
+* FengAdaptive  (m_isFengAdaptive, Boolean attribute, Default: false)
+* Status        (m_status, status of current queue length, Default: Above)
+* alpha         (m_a, increment parameter for m_curMaxP, Default: 5)
+* beta          (m_b, decrement parameter for m_curMaxP, Default: 15)
 
 
 Consult the ns-3 documentation for explanation of these attributes.
