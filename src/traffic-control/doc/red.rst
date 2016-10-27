@@ -34,7 +34,16 @@ weight, MinTh and MaxTh and (ii) adapts maximum drop probability. The model
 in ns-3 contains implementation of both the features, and is a port of Sally
 Floyd's ns-2 ARED model. Note that the user is allowed to choose and explicitly
 configure the simulation by selecting feature (i) or feature (ii), or both.
- 
+
+
+Self-Configuring RED Gateway (SCRED)
+====================================
+SCRED is variant of RED with a feature that it adapts maximum drop probability.
+The model in ns-3 contains implementation of this feature, and is a port of ns-2
+RARED model. Note that the user is allowed to choose and explicitly configure
+the simulation by selecting feature.
+
+
 
 References
 ==========
@@ -44,6 +53,10 @@ S.Floyd, K.Fall http://icir.org/floyd/papers/redsims.ps
 
 ARED queue implementation is based on the algorithm provided in:
 S. Floyd et al, http://www.icir.org/floyd/papers/adaptiveRed.pdf
+
+SCRED queue implementation is based on the algorithm provided in:
+http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=752150
+
 
 Attributes
 ==========
@@ -75,6 +88,14 @@ In addition to RED attributes, ARED queue requires following attributes:
 * Alpha (increment parameter for m_curMaxP)
 * Beta (decrement parameter for m_curMaxP)
 * RTT
+
+In addition to RED attributes, SCRED queue requires following attributes:
+
+* FengAdaptive (m_isFengAdaptive, Boolean attribute, Default: false)
+* Status (m_status, status of current queue length, Default: Above)
+* alpha (m_a, increment parameter for m_curMaxP, Default: 5)
+* beta (m_b, decrement parameter for m_curMaxP, Default: 15)
+
 
 Consult the ns-3 documentation for explanation of these attributes.
 
@@ -110,6 +131,16 @@ To configure (ii); AdaptMaxP must be set to true, as done in
 
   Config::SetDefault ("ns3::RedQueueDisc::AdaptMaxP", BooleanValue (true));
 
+Simulating SCRED
+===============
+
+To switch on SCRED algorithm, the attribute FengAdaptive must be set to true,
+as done in ``src/traffic-control/examples/red-vs-scred.cc``:
+
+.. sourcecode:: cpp
+
+  Config::SetDefault ("ns3::RedQueueDisc::FengAdaptive", BooleanValue (true));
+
 Examples
 ========
 
@@ -118,6 +149,10 @@ The RED queue example is found at ``src/traffic-control/examples/red-tests.cc``.
 ARED queue examples can be found at:
 ``src/traffic-control/examples/adaptive-red-tests.cc`` and 
 ``src/traffic-control/examples/red-vs-ared.cc``
+
+
+SCRED queue example can be found at:
+``src/traffic-control/examples/red-vs-scred.cc``
 
 Validation
 **********
