@@ -311,7 +311,7 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
   drop.test8 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
-  NS_TEST_EXPECT_MSG_GT (drop.test8, drop.test4, "Test 8 should have less drops than test 6");
+  NS_TEST_EXPECT_MSG_GT (drop.test8, drop.test6, "Test 8 should have less drops than test 6");
 
 
 
