@@ -496,16 +496,6 @@ RedQueueDisc::InitializeParams (void)
       // Turn on m_isAdaptMaxP to adapt m_curMaxP
       m_isAdaptMaxP = true;
     }
-
-  if (m_isFengAdaptive)
-    {
-      m_curMaxP = 0.02;
-      m_status = Above;
-    }
-  else
-    {
-      m_curMaxP = 1.0 / m_lInterm;
-    }
     
   if (m_minTh == 0 && m_maxTh == 0)
     {
@@ -544,7 +534,15 @@ RedQueueDisc::InitializeParams (void)
       th_diff = 1.0; 
     }
   m_vA = 1.0 / th_diff;
-
+  if (m_isFengAdaptive)
+    {
+      m_curMaxP = 0.02;
+      m_status = Above;
+    }
+  else
+    {
+      m_curMaxP = 1.0 / m_lInterm;
+    }
   m_vB = -m_minTh / th_diff;
 
   if (m_isGentle)
