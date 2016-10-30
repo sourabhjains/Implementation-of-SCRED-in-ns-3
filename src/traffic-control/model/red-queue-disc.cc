@@ -48,7 +48,7 @@
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.                         
+ * SUCH DAMAGE.
  */
 
 /*
@@ -496,7 +496,7 @@ RedQueueDisc::InitializeParams (void)
       // Turn on m_isAdaptMaxP to adapt m_curMaxP
       m_isAdaptMaxP = true;
     }
-    
+
   if (m_minTh == 0 && m_maxTh == 0)
     {
       m_minTh = 5.0;
