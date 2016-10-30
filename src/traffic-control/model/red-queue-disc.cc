@@ -115,7 +115,7 @@ TypeId RedQueueDisc::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("FengAdaptive",
                    "True to enable Feng's Adaptive RED",
-                   BooleanValue(false),
+                   BooleanValue (false),
                    MakeBooleanAccessor (&RedQueueDisc::m_isFengAdaptive),
                    MakeBooleanChecker ()) 
     .AddAttribute ("MinTh",
