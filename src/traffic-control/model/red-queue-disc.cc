@@ -501,12 +501,6 @@ RedQueueDisc::InitializeParams (void)
     {
       m_curMaxP = 0.02;
       m_status = Above;
-
-      // Set m_minTh, m_maxTh and m_qW to zero for automatic setting
-      m_minTh = 0;
-      m_maxTh = 0;
-      m_qW = 0;
-      
     }
   else
     {
