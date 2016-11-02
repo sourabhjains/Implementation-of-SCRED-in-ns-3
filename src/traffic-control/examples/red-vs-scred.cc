@@ -169,33 +169,15 @@ int main (int argc, char *argv[])
 
   RedQueueDisc::Stats st = StaticCast<RedQueueDisc> (queueDiscs.Get (0))->GetStats ();
 
-  if (queueDiscType == "RED")
+  if (st.unforcedDrop > st.forcedDrop)
     {
-      if (st.unforcedDrop > st.forcedDrop)
-        {
-          std::cout << "Drops due to prob mark should be less than the drops due to hard mark" << std::endl;
-          exit (-1);
-        }
-
-      if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be zero drops due to queue full" << std::endl;
-          exit (-1);
-        }
+      std::cout << "Drops due to prob mark should be less than the drops due to hard mark" << std::endl;
+      exit (1);
     }
-  else if (queueDiscType == "FengAdaptive")
+  else if (st.qLimDrop != 0)
     {
-      if (st.unforcedDrop < st.forcedDrop)
-        {
-          std::cout << "Drops due to prob mark should be more than the drops due to hard mark" << std::endl;
-          exit (-1);
-        }
-
-      if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be zero drops due to queue full" << std::endl;
-          exit (-1);
-        }
+      std::cout << "There should be zero drops due to queue full" << std::endl;
+      exit (1);
     }
 
   std::cout << "*** Stats from the bottleneck queue disc ***" << std::endl;
