@@ -183,7 +183,6 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
     uint32_t test5;
     uint32_t test6;
     uint32_t test7;
-    uint32_t test8;
   } drop;
 
 
@@ -288,33 +287,6 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
   drop.test7 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_GT (drop.test7, drop.test3, "Test 7 should have more drops than test 3");
-
-  // test 8 : SCRED parameters
-    queue = CreateObject<RedQueueDisc> ();
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
-                         "Verify that we can actually set the attribute Mode");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinTh", DoubleValue (minTh)), true,
-                         "Verify that we can actually set the attribute MinTh");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxTh", DoubleValue (maxTh)), true,
-                         "Verify that we can actually set the attribute MaxTh");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
-                         "Verify that we can actually set the attribute QueueLimit");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.020)), true,
-                         "Verify that we can actually set the attribute QW");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Gentle", BooleanValue (false)), true,
-                         "Verify that we can actually set the attribute Gentle");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("FengAdaptive", BooleanValue (true)), true,
-                         "Verify that we can actually set the attribute FengAdaptive");
-
-  
-  queue->Initialize ();
-  Enqueue (queue, pktSize, 300);
-  st = StaticCast<RedQueueDisc> (queue)->GetStats ();
-  drop.test8 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
-  NS_TEST_EXPECT_MSG_GT (drop.test8, drop.test6, "Test 8 should have less drops than test 6");
-
-
-
 }
 
 void 
