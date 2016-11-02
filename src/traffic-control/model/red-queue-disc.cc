@@ -612,6 +612,8 @@ RedQueueDisc::InitializeParams (void)
 void
 RedQueueDisc::UpdateMaxPFeng (double newAve)
 {
+  NS_LOG_FUNCTION (this << newAve);
+
   if (m_minTh < newAve && newAve < m_maxTh)
     {
       m_status = Between;
