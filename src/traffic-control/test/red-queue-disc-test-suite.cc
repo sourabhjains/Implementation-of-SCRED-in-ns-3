@@ -99,7 +99,7 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
-      pktSize = 1000;
+      pktSize = 500;
       modeSize = pktSize;
       queue->SetTh (minTh * modeSize, maxTh * modeSize);
       queue->SetQueueLimit (qSize * modeSize);
@@ -183,6 +183,8 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
     uint32_t test5;
     uint32_t test6;
     uint32_t test7;
+    uint32_t test8;
+    uint32_t test9;
   } drop;
 
 
@@ -287,6 +289,56 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
   drop.test7 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_GT (drop.test7, drop.test3, "Test 7 should have more drops than test 3");
+
+  
+  // test 8: Original RED with default parameter settings and fixed m_curMaxP
+  queue = CreateObject<RedQueueDisc> ();
+  minTh = 30 * modeSize;
+  maxTh = 90 * modeSize;
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
+                         "Verify that we can actually set the attribute Mode");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinTh", DoubleValue (minTh)), true,
+                         "Verify that we can actually set the attribute MinTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxTh", DoubleValue (maxTh)), true,
+                         "Verify that we can actually set the attribute MaxTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
+                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.002)), true,
+                         "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("LInterm", DoubleValue (2)), true,
+                         "Verify that we can actually set the attribute LInterm");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Gentle", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute Gentle");
+  queue->Initialize ();
+  Enqueue (queue, pktSize, 300);
+  st = StaticCast<RedQueueDisc> (queue)->GetStats ();
+  drop.test8 = st.unforcedDrop;
+  NS_TEST_EXPECT_MSG_NE (drop.test8, 0, "There should some dropped packets due to probability mark");
+
+
+  // test 9: Feng's Adaptive RED with default parameter settings and varying m_curMaxP
+  queue = CreateObject<RedQueueDisc> ();
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
+                         "Verify that we can actually set the attribute Mode");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinTh", DoubleValue (minTh)), true,
+                         "Verify that we can actually set the attribute MinTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxTh", DoubleValue (maxTh)), true,
+                         "Verify that we can actually set the attribute MaxTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
+                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.002)), true,
+                         "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("LInterm", DoubleValue (2)), true,
+                         "Verify that we can actually set the attribute LInterm");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Gentle", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute Gentle");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("FengAdaptive", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute FengAdaptive");
+  queue->Initialize ();
+  Enqueue (queue, pktSize, 300);
+  st = StaticCast<RedQueueDisc> (queue)->GetStats ();
+  drop.test9 = st.unforcedDrop;
+  NS_TEST_EXPECT_MSG_LT (drop.test9, drop.test8, "Test 9 should have less drops due to probability mark than test 8");
 }
 
 void 
