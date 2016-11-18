@@ -6,7 +6,7 @@
 
 ###Overview
 
-Selfconfiguring RED (SCRED) [1] is a variant of Random Early Detection (RED) [2], it makes RED parameters adaptive to handle wide variety of traffic. This repository provides an implementation of NLRED in ns-3.25 [3].
+Selfconfiguring RED (SCRED) [1] is a variant of Random Early Detection (RED) [2], it makes RED parameters adaptive to handle wide variety of traffic. This repository provides an implementation of SCRED in ns-3.25 [3].
 
 ###Simulating SCRED 
 
