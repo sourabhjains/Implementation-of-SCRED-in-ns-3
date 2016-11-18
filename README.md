@@ -1,7 +1,5 @@
 # Extending RED qdisc in ns-3 to support Self-Configuring RED (SCRED) algorithm
-
 ##Course Code: CS822
-
 ##Assignment: #GP3
 
 ###Overview
@@ -12,17 +10,17 @@ Selfconfiguring RED (SCRED) [1] is a variant of Random Early Detection (RED) [2]
 
 To simulate SCRED algorithm, the attribute FengAdaptive must be set to true, as shown below:
 
-Config::SetDefault ("ns3::RedQueueDisc::FengAdaptive", BooleanValue (true));
+'Config::SetDefault ("ns3::RedQueueDisc::FengAdaptive", BooleanValue (true));'
 
 ###SCRED example
 
 An example program for SCRED has been provided in
 
-src/traffic-control/examples/red-vs-scred.cc
+'src/traffic-control/examples/red-vs-scred.cc'
 
 and should be executed as
 
-./waf --run "red-vs-scred --queueDiscType=FengAdaptive"
+'./waf --run "red-vs-scred --queueDiscType=FengAdaptive"'
 
 
 References:
