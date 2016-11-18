@@ -16,11 +16,11 @@ To simulate SCRED algorithm, the attribute FengAdaptive must be set to true, as 
 
 An example program for SCRED has been provided in
 
-`rc/traffic-control/examples/red-vs-scred.cc`
+`src/traffic-control/examples/red-vs-scred.cc`
 
 and should be executed as
 
-`/waf --run "red-vs-scred --queueDiscType=FengAdaptive"`
+`./waf --run "red-vs-scred --queueDiscType=FengAdaptive"`
 
 
 References:
