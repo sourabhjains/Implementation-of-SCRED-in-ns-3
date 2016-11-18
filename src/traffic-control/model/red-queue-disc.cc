@@ -534,15 +534,7 @@ RedQueueDisc::InitializeParams (void)
       th_diff = 1.0; 
     }
   m_vA = 1.0 / th_diff;
-  if (m_isFengAdaptive)
-    {
-      m_curMaxP = 0.02;
-      m_status = Above;
-    }
-  else
-    {
-      m_curMaxP = 1.0 / m_lInterm;
-    }
+  m_curMaxP = 1.0 / m_lInterm;
   m_vB = -m_minTh / th_diff;
 
   if (m_isGentle)
