@@ -1,10 +1,10 @@
-# Implementation of Selfconfiguring RED (SCRED) algorithm in ns-3
+# Implementation of Self Configuring RED (SCRED) algorithm in ns-3
 ##Course Code: CS822
 ##Assignment: #GP3
 
 ###Overview
 
-Selfconfiguring RED (SCRED) [1] is a variant of Random Early Detection (RED) [2], it makes RED parameters adaptive to handle wide variety of traffic. This repository provides an implementation of SCRED in ns-3.25 [3].
+Self Configuring RED (SCRED) [1] is a variant of Random Early Detection (RED) [2], it makes RED parameters adaptive to handle wide variety of traffic. This repository provides an implementation of SCRED in ns-3.25 [3].
 
 ###Simulating SCRED 
 
