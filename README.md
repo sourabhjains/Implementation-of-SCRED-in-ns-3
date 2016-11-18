@@ -1,4 +1,4 @@
-# Extending RED qdisc in ns-3 to support Self-Configuring RED (SCRED) algorithm
+# Implementation of Selfconfiguring RED (SCRED) algorithm in ns-3
 ##Course Code: CS822
 ##Assignment: #GP3
 
